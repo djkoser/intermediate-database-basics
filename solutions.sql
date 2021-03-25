@@ -100,3 +100,161 @@ WHERE album_id IN (
     WHERE name = 'Queen'
   )
 );
+-- Practice updating Rows
+-- 1
+UPDATE customer
+SET fax = null
+WHERE fax IS NOT null;
+-- 2
+UPDATE customer
+SET company = 'Self'
+WHERE company IS null; 
+-- 3
+UPDATE customer
+SET last_name = 'Thompson'
+WHERE first_name = 'Julia' AND last_name = 'Barnett';
+-- 4
+UPDATE customer
+SET support_rep_id = 4
+WHERE email = 'luisrojas@yahoo.cl';
+-- 5
+UPDATE track
+SET composer = 'The darkness around us'
+WHERE genre_id IN (
+  SELECT genre_id
+  FROM genre
+  WHERE name = 'Metal'
+)
+AND composer IS null;
+-- Group By Practice
+-- 1
+SELECT COUNT(t.name), g.name
+FROM track t, genre g
+WHERE t.genre_id = g.genre_id
+GROUP BY g.name;
+-- 2
+SELECT COUNT(t.name), g.name
+FROM track t, genre g
+WHERE t.genre_id = g.genre_id
+AND g.name ='Pop' OR g.name = 'Rock'
+GROUP BY g.name;
+-- 3
+SELECT ar.name, COUNT(al.title)
+from album al
+JOIN artist ar ON ar.artist_id = al.artist_id
+GROUP BY ar.name;  
+-- Use Distinct
+-- 1
+SELECT DISTINCT composer
+FROM track
+WHERE composer IS NOT null; 
+-- 2
+SELECT DISTINCT billing_postal_code
+FROM invoice
+WHERE billing_postal_code IS NOT null; 
+-- 3
+SELECT DISTINCT company
+FROM customer
+WHERE company IS NOT null; 
+-- Delete Rows
+-- 1 -> Done
+-- 2
+DELETE 
+FROM practice_delete
+WHERE type = 'bronze';
+-- 3
+DELETE
+FROM practice_delete
+WHERE type = 'silver';
+-- 4
+DELETE
+FROM practice_delete
+WHERE value = 150; 
+-- eCommerce Simulation - No Hints
+-- Create Tables
+CREATE TABLE customer (
+  user_id SERIAL PRIMARY KEY,
+  name TEXT,
+  email TEXT
+);
+
+CREATE TABLE product (
+  product_id SERIAL PRIMARY KEY,
+  name TEXT,
+  price FLOAT
+);
+
+CREATE TABLE product_order (
+  id SERIAL PRIMARY KEY,
+  order_id INT, 
+  product_id INT REFERENCES product(product_id)
+);
+
+
+INSERT INTO customer 
+(name, email)
+VALUES
+('Bob','bob@bob.com'),
+('Joe','Joe@bob.com'),
+('Sue','Sue@bob.com'),
+('Jef','Jef@bob.com'),
+('Kat','Kat@bob.com');
+
+INSERT INTO product
+(name, price)
+VALUES
+('kite',20.99),
+('sailboat',40000.99),
+('coffee grinder',40.99),
+('toaster',30.99),
+('mug',4.99);
+
+INSERT INTO product_order
+(order_id, product_id)
+VALUES
+(1,1),(1,2),(2,3),(2,4),(2,4),(3,3),(4,5),(5,5),(5,5),(5,1);
+
+-- Run Queries
+-- Get all products for the first order
+SELECT p.name
+FROM product_order po, product p
+WHERE po.product_id = p.product_id
+AND po.order_id=1;
+-- Get all orders
+SELECT po.order_id, p.name, p.price
+FROM product_order po
+JOIN product p ON po.product_id = p.product_id;
+-- Get the total cost of an order
+SELECT SUM(p.price)
+FROM product_order po, product p
+WHERE po.product_id = p.product_id
+AND po.order_id=1;
+-- Add a foreign key reference from orders to users.
+-- Update the orders table to link a user to each order.
+ALTER TABLE product_order
+ADD COLUMN user_id INT
+REFERENCES customer (user_id); 
+
+-- Add faux user data to table (from stack overflow)
+UPDATE product_order po 
+SET user_id = c.replace_column
+FROM (
+  VALUES
+    (1,1),
+    (2,2), 
+    (3,3),
+    (4,4), 
+    (5,5)
+) as c (check_column, replace_column) 
+where c.check_column = po.order_id;
+
+ 
+
+-- Run queries against your data.
+-- Get all orders for a user.
+SELECT po.order_id, p.
+
+-- Get how many orders each user has.
+-- Black Diamond
+-- Get the total amount on all orders for each user.
+
