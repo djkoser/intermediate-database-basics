@@ -223,7 +223,8 @@ AND po.order_id=1;
 -- Get all orders
 SELECT po.order_id, p.name, p.price
 FROM product_order po
-JOIN product p ON po.product_id = p.product_id;
+JOIN product p ON po.product_id = p.product_id
+ORDER BY po.order_id; 
 -- Get the total cost of an order
 SELECT SUM(p.price)
 FROM product_order po, product p
@@ -248,13 +249,46 @@ FROM (
 ) as c (check_column, replace_column) 
 where c.check_column = po.order_id;
 
- 
+--  Add additional faux data to give some users multiple orders
+INSERT INTO product_order 
+(order_id, product_id, user_id)
+VALUES
+(6,1,1),
+(6,2,1),
+(7,3,2),
+(8,4,3),
+(8,5,3),
+(9,1,4),
+(9,2,4),
+(10,3,5),
+(10,4,5),
+(11,5,5);
+
 
 -- Run queries against your data.
 -- Get all orders for a user.
-SELECT po.order_id, p.
+SELECT po.order_id, p.name, p.price
+FROM product_order po
+JOIN product p ON po.product_id = p.product_id
+WHERE po.user_id IN (
+  SELECT user_id
+  FROM customer
+  WHERE name = 'Bob'
+)
+ORDER BY po.order_id; 
 
 -- Get how many orders each user has.
+SELECT c.name, COUNT(DISTINCT(po.user_id, order_id))
+FROM customer c, product_order po
+WHERE c.user_id = po.user_id
+GROUP BY c.user_id;
+
 -- Black Diamond
 -- Get the total amount on all orders for each user.
+
+SELECT c.name, SUM(p.price)
+FROM product_order po
+JOIN customer c ON po.user_id = c.user_id
+JOIN product p ON po.product_id = p.product_id
+GROUP BY c.user_id; 
 
